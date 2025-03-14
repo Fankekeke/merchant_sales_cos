@@ -4,20 +4,21 @@ import java.time.LocalDateTime;
 import java.io.Serializable;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
- * 药品类型
+ * 保质期预警
  *
  * @author FanK
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class FirnitureTypeInfo implements Serializable {
+public class WarrantyInfo implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -28,19 +29,19 @@ public class FirnitureTypeInfo implements Serializable {
     private Integer id;
 
     /**
-     * 编号
+     * 采购单号
      */
-    private String code;
+    private String purchaseCode;
 
     /**
-     * 类型名称
+     * 预警内容
      */
-    private String name;
+    private String content;
 
     /**
-     * 图片
+     * 药品ID
      */
-    private String images;
+    private Integer drugId;
 
     /**
      * 创建时间
@@ -48,9 +49,20 @@ public class FirnitureTypeInfo implements Serializable {
     private String createDate;
 
     /**
-     * 备注
+     * 库存编号
      */
-    private String remark;
+    private String stockCodes;
+
+    /**
+     * 商家ID
+     */
+    private Integer merchantId;
+
+    @TableField(exist = false)
+    private String pharmacyName;
+
+    @TableField(exist = false)
+    private String drugName;
 
 
 }

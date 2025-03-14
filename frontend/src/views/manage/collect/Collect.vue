@@ -8,24 +8,24 @@
             <a-col :md="6" :sm="24">
               <a-form-item
                 label="用户昵称"
-                :labelCol="{span: 4}"
-                :wrapperCol="{span: 18, offset: 2}">
+                :labelCol="{span: 5}"
+                :wrapperCol="{span: 18, offset: 1}">
                 <a-input v-model="queryParams.userName"/>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="24">
               <a-form-item
                 label="药品类型"
-                :labelCol="{span: 4}"
-                :wrapperCol="{span: 18, offset: 2}">
+                :labelCol="{span: 5}"
+                :wrapperCol="{span: 18, offset: 1}">
                 <a-input v-model="queryParams.typeName"/>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="24">
               <a-form-item
                 label="药品名称"
-                :labelCol="{span: 4}"
-                :wrapperCol="{span: 18, offset: 2}">
+                :labelCol="{span: 5}"
+                :wrapperCol="{span: 18, offset: 1}">
                 <a-input v-model="queryParams.firnitureName"/>
               </a-form-item>
             </a-col>
@@ -160,7 +160,7 @@ export default {
         },
         ellipsis: true
       }, {
-        title: '型号',
+        title: '型号规格',
         dataIndex: 'portion',
         customRender: (text, row, index) => {
           if (text !== null) {
@@ -187,7 +187,7 @@ export default {
         dataIndex: 'merchantName',
         ellipsis: true
       }, {
-        title: '发送时间',
+        title: '收藏时间',
         dataIndex: 'createDate',
         ellipsis: true
       }]

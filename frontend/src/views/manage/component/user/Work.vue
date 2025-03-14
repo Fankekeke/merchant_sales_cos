@@ -2,7 +2,7 @@
   <div style="background:#ECECEC; padding:30px;margin-top: 30px;margin-bottom: 30px">
     <div style="height: 450px;">
       <div style="height: 350px;background: url(../static/img/interior-3530343_1920.jpg) no-repeat center;padding: 50px">
-        <div style="font-size: 35px;font-weight: 500;color: white;font-family: SimHei">欢迎来到居然之家~</div>
+        <div style="font-size: 35px;font-weight: 500;color: white;font-family: SimHei">欢迎来到万民大药堂~</div>
         <div style="font-size: 22px;font-weight: 500;color: white;font-family: SimHei">开始选购</div>
         <div style="height: 180px;margin-top: 100px">
           <a-card :bordered="false" hoverable style="height: 100%;box-shadow: 3px 3px 3px rgba(0, 0, 0, .2);color:#fff">
@@ -50,7 +50,6 @@
             </div>
             <template slot="actions" class="ant-card-actions">
               <a-icon key="shopping" type="shopping" @click="view(item)"/>
-              <a-icon key="control" type="control" @click="customAdd(item)"/>
             </template>
           </a-card>
         </div>

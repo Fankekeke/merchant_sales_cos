@@ -1,5 +1,6 @@
 package cc.mrbird.febs.cos.entity;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.io.Serializable;
 
@@ -62,6 +63,11 @@ public class StaffInfo implements Serializable {
      * 创建时间
      */
     private String createDate;
+
+    /**
+     * 基础工资
+     */
+    private BigDecimal baseSalary;
 
     /**
      * 所属账户

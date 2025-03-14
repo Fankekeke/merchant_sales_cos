@@ -1,6 +1,6 @@
 package cc.mrbird.febs.cos.dao;
 
-import cc.mrbird.febs.cos.entity.FirnitureTypeInfo;
+import cc.mrbird.febs.cos.entity.OrderTemplateInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -11,14 +11,14 @@ import java.util.LinkedHashMap;
 /**
  * @author FanK
  */
-public interface FirnitureTypeInfoMapper extends BaseMapper<FirnitureTypeInfo> {
+public interface OrderTemplateInfoMapper extends BaseMapper<OrderTemplateInfo> {
 
     /**
-     * 分页获取药品类型信息
+     * 分页获取订单模板信息
      *
      * @param page              分页对象
-     * @param firnitureTypeInfo 药品类型信息
+     * @param orderTemplateInfo 订单模板信息
      * @return 结果
      */
-    IPage<LinkedHashMap<String, Object>> selectFirnitureTypePage(Page<FirnitureTypeInfo> page, @Param("firnitureTypeInfo") FirnitureTypeInfo firnitureTypeInfo);
+    IPage<LinkedHashMap<String, Object>> queryOrderTemplatePage(Page<OrderTemplateInfo> page, @Param("orderTemplateInfo") OrderTemplateInfo orderTemplateInfo);
 }

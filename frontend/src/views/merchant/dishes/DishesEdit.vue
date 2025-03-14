@@ -19,18 +19,18 @@
           </a-form-item>
         </a-col>
         <a-col :span="12">
-          <a-form-item label='原料' v-bind="formItemLayout">
+          <a-form-item label='功效' v-bind="formItemLayout">
             <a-input v-decorator="[
             'rawMaterial',
-            { rules: [{ required: true, message: '请输入原料!' }] }
+            { rules: [{ required: true, message: '请输入功效!' }] }
             ]"/>
           </a-form-item>
         </a-col>
         <a-col :span="12">
-          <a-form-item label='型号' v-bind="formItemLayout">
+          <a-form-item label='型号规格' v-bind="formItemLayout">
             <a-input v-decorator="[
             'portion',
-            { rules: [{ required: true, message: '请输入型号!' }] }
+            { rules: [{ required: true, message: '请输入型号规格!' }] }
             ]"/>
           </a-form-item>
         </a-col>

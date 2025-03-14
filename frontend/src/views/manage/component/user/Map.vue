@@ -22,7 +22,11 @@
               </a-radio-group>
             </div>
             <a-row :gutter="20" style="padding: 50px">
-              <a-col :span="12" v-for="(item, index) in dishesList" :key="index" style="margin-bottom: 15px">
+              <div style="margin-top: 150px;text-align: center"  v-if="dishesList.length === 0">
+                <a-icon type="alert" theme="twoTone" style="font-size: 75px"/>
+                <h1 style="margin-top: 20px">暂无此药品</h1>
+              </div>
+              <a-col :span="8" v-for="(item, index) in dishesList" :key="index" style="margin-bottom: 15px">
                 <div style="width: 100%;margin-bottom: 15px;text-align: left;box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;">
                   <a-card :bordered="false" hoverable @click="dishesViewOpen(item)">
                     <a-carousel autoplay style="height: 150px;" v-if="item.images !== undefined && item.images !== ''">
@@ -30,22 +34,22 @@
                         <img :src="'http://127.0.0.1:9527/imagesWeb/'+item" style="width: 100%;height: 250px">
                       </div>
                     </a-carousel>
-                    <a-card-meta :title="item.name" :description="item.content.slice(0, 25)+'...'" style="margin-top: 10px"></a-card-meta>
+                    <a-card-meta :title="item.name" :description="item.content.slice(0, 18)+'...'" style="margin-top: 10px"></a-card-meta>
                     <div style="font-size: 12px;font-family: SimHei;margin-top: 8px;margin-bottom: 5px">
                       <a-row>
                         <a-col :span="18">
                           <div>
-                            <span>{{ item.rawMaterial.slice(0, 10)+'...' }}</span> |
-                            <span  style="margin-left: 2px">{{ item.portion.slice(0, 15)+'...' }}</span>
+                            <span>{{ item.rawMaterial.slice(0, 8)+'...' }}</span> |
+                            <span  style="margin-left: 2px">{{ item.portion.slice(0, 8)+'...' }}</span>
                           </div>
-                          <div style="color: #f5222d; font-size: 13px;float: left;margin-top: 5px">{{ item.unitPrice }}元</div>
+                          <div style="font-size: 13px;float: left;margin-top: 5px">单价：<span style="color: #f5222d;">{{ item.unitPrice }}元</span></div>
                         </a-col>
                         <a-col :span="3" style="height: 100%;text-align: right">
                           <a-icon type="heart" v-if="checkCollect(item.id)" style="font-size: 20px;margin-right: 5px;margin-top: 10px;cursor: pointer;color: red" @click="collectDel(item)"/>
-                          <a-icon type="heart" v-else style="font-size: 20px;margin-right: 5px;margin-top: 10px;cursor: pointer;" @click="collectAdd(item)"/>
+                          <a-icon type="heart" v-else style="font-size: 20px;margin-right: 5px;margin-top: 10px;cursor: pointer;" @click.stop="collectAdd(item)"/>
                         </a-col>
                         <a-col :span="3" style="height: 100%;text-align: right">
-                          <a-icon type="plus-square" theme="twoTone" style="font-size: 20px;margin-right: 5px;margin-top: 10px;cursor: pointer;" @click="dishesAdd(item)" v-show="nextFlag == 1"/>
+                          <a-icon type="plus-square" theme="twoTone" style="font-size: 20px;margin-right: 5px;margin-top: 10px;cursor: pointer;" @click.stop="dishesAdd(item)" v-show="nextFlag == 1"/>
                         </a-col>
                       </a-row>
                     </div>
@@ -119,11 +123,11 @@
                     </a-table>
 <!--                    <a-alert :message="'购买药品热量【'+totalHeat+'】 超过600，请合理规划' " banner v-if="totalHeat > 600"/>-->
                     <a-row style="padding-left: 20px;padding-right: 20px;margin-top: 30px">
-                      <a-col style="margin-bottom: 15px"><span style="font-size: 13px;font-weight: 650;color: #000c17">选择 配送/店内购买</span></a-col>
+                      <a-col style="margin-bottom: 15px"><span style="font-size: 13px;font-weight: 650;color: #000c17">选择 配送/店内自取</span></a-col>
                       <a-col :span="24">
                         <a-radio-group button-style="solid" v-model="type">
                           <a-radio-button value="0">
-                            店内购买
+                            店内自取
                           </a-radio-button>
                           <a-radio-button value="1">
                             配送
@@ -242,17 +246,21 @@ export default {
         title: '购买数量',
         dataIndex: 'amount'
       }, {
-        title: '热量',
-        dataIndex: 'heat'
-      }, {
         title: '单价',
-        dataIndex: 'unitPrice'
+        dataIndex: 'unitPrice',
+        customRender: (text, row, index) => {
+          if (text !== null) {
+            return text + '元'
+          } else {
+            return '- -'
+          }
+        }
       }, {
         title: '总价格',
         dataIndex: 'totalPrice',
         customRender: (text, row, index) => {
           if (text !== null) {
-            return text
+            return text + '元'
           } else {
             return '- -'
           }
@@ -312,6 +320,7 @@ export default {
       type: '0',
       nextFlag: 1,
       totalPrice: 0,
+      totalIntegral: 0,
       totalHeat: 0,
       dishesList: [],
       dishesBackList: [],
@@ -369,6 +378,7 @@ export default {
         this.type = '0'
         this.nextFlag = 1
         this.totalPrice = 0
+        this.totalIntegral = 0
         this.totalHeat = 0
         this.selectDishesByMerchant(this.orderData.id)
         this.selectTypeList()
@@ -490,6 +500,7 @@ export default {
         if (e.id === row.id) {
           e.amount = e.amount - 1
           e.totalPrice = (e.unitPrice * e.amount).toFixed(2)
+          e.totalIntegral = (e.integralUnit * e.amount).toFixed(2)
           e.totalHeat = (e.heat * e.amount).toFixed(2)
           if (e.amount === 0) {
             checkList = checkList.filter(e => e.id !== row.id)
@@ -497,12 +508,15 @@ export default {
         }
       })
       let totalPrice = 0
+      let totalIntegral = 0
       let totalHeat = 0
       checkList.forEach(e => {
         totalPrice = Number(e.totalPrice) + Number(totalPrice)
+        totalIntegral = Number(e.integralUnit) + Number(totalPrice)
         totalHeat = Number(e.totalHeat) + Number(totalHeat)
       })
       this.totalPrice = totalPrice.toFixed(2)
+      this.totalIntegral = totalIntegral.toFixed(2)
       this.totalHeat = totalHeat.toFixed(2)
       this.checkList = checkList
     },
@@ -515,8 +529,13 @@ export default {
         e.dishesId = e.id
         if (e.id === row.id) {
           check = true
+          if (row.laveNum < e.amount + 1) {
+            this.$message.error('库存不足')
+            return false
+          }
           e.amount = e.amount + 1
           e.totalPrice = (e.unitPrice * e.amount).toFixed(2)
+          e.totalIntegral = (e.integralUnit * e.amount).toFixed(2)
           e.totalHeat = (e.heat * e.amount).toFixed(2)
         }
       })
@@ -524,16 +543,20 @@ export default {
         let data = row
         data.amount = 1
         data.totalPrice = data.unitPrice
+        data.totalIntegral = data.integralUnit
         data.totalHeat = data.heat
         checkList.push(data)
       }
       let totalPrice = 0
+      let totalIntegral = 0
       let totalHeat = 0
       checkList.forEach(e => {
         totalPrice = Number(e.totalPrice) + Number(totalPrice)
+        totalIntegral = Number(e.integralUnit) + Number(totalPrice)
         totalHeat = Number(e.totalHeat) + Number(totalHeat)
       })
       this.totalPrice = totalPrice.toFixed(2)
+      this.totalIntegral = totalIntegral.toFixed(2)
       this.totalHeat = totalHeat.toFixed(2)
       this.checkList = checkList
     },

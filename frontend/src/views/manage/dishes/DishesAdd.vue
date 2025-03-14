@@ -19,26 +19,42 @@
           </a-form-item>
         </a-col>
         <a-col :span="12">
-          <a-form-item label='原料' v-bind="formItemLayout">
+          <a-form-item label='功效' v-bind="formItemLayout">
             <a-input v-decorator="[
             'rawMaterial',
-            { rules: [{ required: true, message: '请输入原料!' }] }
+            { rules: [{ required: true, message: '请输入功效!' }] }
             ]"/>
           </a-form-item>
         </a-col>
         <a-col :span="12">
-          <a-form-item label='型号' v-bind="formItemLayout">
+          <a-form-item label='型号规格' v-bind="formItemLayout">
             <a-input v-decorator="[
             'portion',
-            { rules: [{ required: true, message: '请输入型号!' }] }
+            { rules: [{ required: true, message: '请输入型号规格!' }] }
             ]"/>
           </a-form-item>
         </a-col>
         <a-col :span="12">
-          <a-form-item label='价格' v-bind="formItemLayout">
+          <a-form-item label='销售价格' v-bind="formItemLayout">
             <a-input-number style="width: 100%" v-decorator="[
             'unitPrice',
-            { rules: [{ required: true, message: '请输入价格!' }] }
+            { rules: [{ required: true, message: '请输入销售价格!' }] }
+            ]" :min="0.1" :step="0.1"/>
+          </a-form-item>
+        </a-col>
+        <a-col :span="12">
+          <a-form-item label='进货价格' v-bind="formItemLayout">
+            <a-input-number style="width: 100%" v-decorator="[
+            'receiveUnitPrice',
+            { rules: [{ required: true, message: '请输入进货价格!' }] }
+            ]" :min="0.1" :step="0.1"/>
+          </a-form-item>
+        </a-col>
+        <a-col :span="12">
+          <a-form-item label='积分价格' v-bind="formItemLayout">
+            <a-input-number style="width: 100%" v-decorator="[
+            'integralUnit',
+            { rules: [{ required: true, message: '请输入积分价格!' }] }
             ]" :min="0.1" :step="0.1"/>
           </a-form-item>
         </a-col>
@@ -54,13 +70,24 @@
           </a-form-item>
         </a-col>
         <a-col :span="12">
-          <a-form-item label='药品余量' v-bind="formItemLayout">
-            <a-input-number style="width: 100%" v-decorator="[
-            'laveNum',
-            { rules: [{ required: true, message: '请输入药品余量!' }] }
-            ]" :min="1" :step="1"/>
+          <a-form-item label='是否为处方药' v-bind="formItemLayout">
+            <a-select v-decorator="[
+              'prescriptionFlag',
+              { rules: [{ required: true, message: '请输入是否为处方药!' }] }
+              ]">
+              <a-select-option value="0">否</a-select-option>
+              <a-select-option value="1">是</a-select-option>
+            </a-select>
           </a-form-item>
         </a-col>
+<!--        <a-col :span="12">-->
+<!--          <a-form-item label='药品余量' v-bind="formItemLayout">-->
+<!--            <a-input-number style="width: 100%" v-decorator="[-->
+<!--            'laveNum',-->
+<!--            { rules: [{ required: true, message: '请输入药品余量!' }] }-->
+<!--            ]" :min="1" :step="1"/>-->
+<!--          </a-form-item>-->
+<!--        </a-col>-->
         <a-col :span="12">
           <a-form-item label='药品类型' v-bind="formItemLayout">
             <a-select style="width: 100%" v-decorator="[

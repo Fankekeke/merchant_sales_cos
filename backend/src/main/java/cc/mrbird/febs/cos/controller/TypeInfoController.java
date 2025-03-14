@@ -2,8 +2,8 @@ package cc.mrbird.febs.cos.controller;
 
 
 import cc.mrbird.febs.common.utils.R;
-import cc.mrbird.febs.cos.entity.FirnitureTypeInfo;
-import cc.mrbird.febs.cos.service.IFirnitureTypeInfoService;
+import cc.mrbird.febs.cos.entity.TypeInfo;
+import cc.mrbird.febs.cos.service.ITypeInfoService;
 import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
@@ -19,20 +19,20 @@ import java.util.List;
 @RestController
 @RequestMapping("/cos/firniture-type-info")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class FirnitureTypeInfoController {
+public class TypeInfoController {
 
-    private final IFirnitureTypeInfoService firnitureTypeInfoService;
+    private final ITypeInfoService firnitureTypeInfoService;
 
     /**
      * 分页获取药品类型信息
      *
      * @param page              分页对象
-     * @param firnitureTypeInfo 药品类型信息
+     * @param typeInfo 药品类型信息
      * @return 结果
      */
     @GetMapping("/page")
-    public R page(Page<FirnitureTypeInfo> page, FirnitureTypeInfo firnitureTypeInfo) {
-        return R.ok(firnitureTypeInfoService.selectFirnitureTypePage(page, firnitureTypeInfo));
+    public R page(Page<TypeInfo> page, TypeInfo typeInfo) {
+        return R.ok(firnitureTypeInfoService.selectFirnitureTypePage(page, typeInfo));
     }
 
     /**
@@ -59,25 +59,25 @@ public class FirnitureTypeInfoController {
     /**
      * 新增药品类型信息
      *
-     * @param firnitureTypeInfo 药品类型信息
+     * @param typeInfo 药品类型信息
      * @return 结果
      */
     @PostMapping
-    public R save(FirnitureTypeInfo firnitureTypeInfo) {
-        firnitureTypeInfo.setCode("FT-" + System.currentTimeMillis());
-        firnitureTypeInfo.setCreateDate(DateUtil.formatDateTime(new Date()));
-        return R.ok(firnitureTypeInfoService.save(firnitureTypeInfo));
+    public R save(TypeInfo typeInfo) {
+        typeInfo.setCode("FT-" + System.currentTimeMillis());
+        typeInfo.setCreateDate(DateUtil.formatDateTime(new Date()));
+        return R.ok(firnitureTypeInfoService.save(typeInfo));
     }
 
     /**
      * 修改药品类型信息
      *
-     * @param firnitureTypeInfo 药品类型信息
+     * @param typeInfo 药品类型信息
      * @return 结果
      */
     @PutMapping
-    public R edit(FirnitureTypeInfo firnitureTypeInfo) {
-        return R.ok(firnitureTypeInfoService.updateById(firnitureTypeInfo));
+    public R edit(TypeInfo typeInfo) {
+        return R.ok(firnitureTypeInfoService.updateById(typeInfo));
     }
 
     /**

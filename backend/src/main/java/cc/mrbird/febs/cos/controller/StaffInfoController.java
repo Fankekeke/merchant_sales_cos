@@ -97,6 +97,17 @@ public class StaffInfoController {
     }
 
     /**
+     * 获取详情信息
+     *
+     * @param code code
+     * @return 结果
+     */
+    @GetMapping("/code/{code}")
+    public R detail(@PathVariable("code") String code) {
+        return R.ok(staffInfoService.getOne(Wrappers.<StaffInfo>lambdaQuery().eq(StaffInfo::getCode, code)));
+    }
+
+    /**
      * 修改员工信息
      *
      * @param staffInfo 员工信息

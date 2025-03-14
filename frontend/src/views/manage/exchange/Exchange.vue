@@ -23,7 +23,7 @@
             </a-col>
             <a-col :md="6" :sm="24">
               <a-form-item
-                label="物品名称"
+                label="商品名称"
                 :labelCol="{span: 5}"
                 :wrapperCol="{span: 18, offset: 1}">
                 <a-input v-model="queryParams.materialName"/>
@@ -171,7 +171,7 @@ export default {
         },
         ellipsis: true
       }, {
-        title: '兑换物品',
+        title: '兑换商品',
         dataIndex: 'materialName',
         customRender: (text, row, index) => {
           if (text !== null) {
@@ -182,7 +182,7 @@ export default {
         },
         ellipsis: true
       }, {
-        title: '物品图片',
+        title: '商品图片',
         dataIndex: 'materialImages',
         customRender: (text, record, index) => {
           if (!record.materialImages) return <a-avatar shape="square" icon="user" />

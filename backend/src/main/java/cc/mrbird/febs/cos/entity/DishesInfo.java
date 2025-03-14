@@ -65,6 +65,21 @@ public class DishesInfo implements Serializable {
     private BigDecimal unitPrice;
 
     /**
+     * 进货价格
+     */
+    private BigDecimal receiveUnitPrice;
+
+    /**
+     * 积分兑换价格
+     */
+    private BigDecimal integralUnit;
+
+    /**
+     * 是否为处方药
+     */
+    private String prescriptionFlag;
+
+    /**
      * 销量
      */
     private Integer saleNum;

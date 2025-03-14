@@ -10,6 +10,7 @@
         sti.name,
         sti.sex,
         sti.status,
+        sti.base_salary,
         sti.dept_id,
         sti.images,
         sti.create_date,

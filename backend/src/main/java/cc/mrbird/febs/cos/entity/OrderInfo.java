@@ -50,6 +50,7 @@ public class OrderInfo implements Serializable {
      * 订单价格
      */
     private BigDecimal orderPrice;
+    private BigDecimal orderIntegral;
 
     /**
      * 折扣后价格

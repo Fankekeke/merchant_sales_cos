@@ -170,7 +170,7 @@ export default {
           </a-popover>
         }
       }, {
-        title: '原料',
+        title: '功效',
         dataIndex: 'rawMaterial',
         customRender: (text, row, index) => {
           if (text !== null) {
@@ -181,7 +181,7 @@ export default {
         },
         ellipsis: true
       }, {
-        title: '型号',
+        title: '型号规格',
         dataIndex: 'portion',
         customRender: (text, row, index) => {
           if (text !== null) {

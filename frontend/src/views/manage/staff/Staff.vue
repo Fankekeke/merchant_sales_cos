@@ -162,6 +162,17 @@ export default {
           </a-popover>
         }
       }, {
+        title: '基础工资',
+        dataIndex: 'baseSalary',
+        customRender: (text, row, index) => {
+          if (text !== null) {
+            return text + '元'
+          } else {
+            return '- -'
+          }
+        },
+        ellipsis: true
+      }, {
         title: '状态',
         dataIndex: 'status',
         customRender: (text, row, index) => {

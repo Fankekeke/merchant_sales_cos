@@ -30,6 +30,14 @@
           </a-form-item>
         </a-col>
         <a-col :span="12">
+          <a-form-item label='基础工资' v-bind="formItemLayout">
+            <a-input-number style="width: 100%" v-decorator="[
+            'baseSalary',
+            { rules: [{ required: true, message: '请输入基础工资!' }] }
+            ]" :min="0.1" :step="0.1"/>
+          </a-form-item>
+        </a-col>
+        <a-col :span="12">
           <a-form-item label='在职状态' v-bind="formItemLayout">
             <a-radio-group button-style="solid" v-decorator="[
               'status',

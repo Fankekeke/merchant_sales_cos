@@ -7,6 +7,7 @@ import cc.mrbird.febs.cos.entity.MerchantInfo;
 import cc.mrbird.febs.cos.entity.UserInfo;
 import cc.mrbird.febs.cos.service.IDishesInfoService;
 import cc.mrbird.febs.cos.service.IMerchantInfoService;
+import cc.mrbird.febs.cos.service.IPharmacyInventoryService;
 import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -29,6 +30,8 @@ public class DishesInfoController {
     private final IDishesInfoService dishesInfoService;
 
     private final IMerchantInfoService merchantInfoService;
+
+    private final IPharmacyInventoryService pharmacyInventoryService;
 
     /**
      * 分页获取药品信息
@@ -55,7 +58,18 @@ public class DishesInfoController {
         if (merchantInfo == null) {
             return R.ok(Collections.emptyList());
         }
-        return R.ok(dishesInfoService.list(Wrappers.<DishesInfo>lambdaQuery().eq(DishesInfo::getMerchantId, merchantInfo.getId()).eq(DishesInfo::getStatus, "1")));
+        return R.ok(pharmacyInventoryService.selectInventoryByPharmacyTRS1R(merchantInfo.getId()));
+    }
+
+    /**
+     * 根据药店获取药品信息
+     *
+     * @param merchantUserId 药店ID
+     * @return 结果
+     */
+    @GetMapping("/selectDishesByMerchant/drug/{merchantUserId}")
+    public R selectDishesByMerchantId(@PathVariable("merchantUserId") Integer merchantUserId) {
+        return R.ok(dishesInfoService.list(Wrappers.<DishesInfo>lambdaQuery().eq(DishesInfo::getMerchantId, merchantUserId)));
     }
 
     /**

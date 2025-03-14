@@ -14,13 +14,13 @@
         <a-col :span="8"><b>药品名称：</b>
           {{ dishesData.name ? dishesData.name : '- -' }}
         </a-col>
-        <a-col :span="8"><b>原料：</b>
+        <a-col :span="8"><b>功效：</b>
           {{ dishesData.rawMaterial ? dishesData.rawMaterial : '- -' }}
         </a-col>
       </a-row>
       <br/>
       <a-row style="padding-left: 24px;padding-right: 24px;">
-        <a-col :span="8"><b>型号：</b>
+        <a-col :span="8"><b>型号规格：</b>
           {{ dishesData.portion }}
         </a-col>
         <a-col :span="8"><b>药品余量：</b>
