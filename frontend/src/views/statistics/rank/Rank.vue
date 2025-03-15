@@ -8,13 +8,15 @@
       </a-row>
     </div>
     <a-row :gutter="20">
-      <a-col :span="12">
+      <a-col :span="24">
         <a-card hoverable :bordered="false" style="width: 100%">
           <a-skeleton active v-if="loading" />
           <apexchart v-if="!loading" type="bar" height="300" :options="chartOptions1" :series="series1"></apexchart>
         </a-card>
       </a-col>
-      <a-col :span="12">
+      <br/>
+      <br/>
+      <a-col :span="24">
         <a-card hoverable :bordered="false" style="width: 100%">
           <a-skeleton active v-if="loading" />
           <apexchart v-if="!loading" type="bar" height="300" :options="chartOptions2" :series="series2"></apexchart>
@@ -40,7 +42,7 @@ export default {
           height: 300
         },
         title: {
-          text: '十天内各家订单数量统计',
+          text: '数量统计',
           align: 'left'
         },
         plotOptions: {
@@ -83,7 +85,7 @@ export default {
           height: 300
         },
         title: {
-          text: '十天内各家订单收益统计',
+          text: '收益统计',
           align: 'left'
         },
         plotOptions: {
@@ -131,24 +133,24 @@ export default {
     selectOrderDays (date) {
       date = date + '-01'
       this.loading = true
-      this.$get(`/cos/pharmacy-info/selectStatisticsByMonth`, {
+      this.$get(`/cos/merchant-info/selectStatisticsByMonth`, {
         date
       }).then((r) => {
         this.series1 = []
         this.series2 = []
         if (r.data.num.length !== 0) {
           this.chartOptions1.xaxis.categories = Array.from(r.data.num, ({name}) => name)
-          r.data.num.forEach(e => {
-            let value = { name: e.name, data: [e.value] }
-            this.series1.push(value)
-          })
+          let values = []
+          let itemData = { name: '销量', data: Array.from(r.data.num, ({value}) => value) }
+          values.push(itemData)
+          this.series1 = values
         }
         if (r.data.price.length !== 0) {
           this.chartOptions2.xaxis.categories = Array.from(r.data.price, ({name}) => name)
-          r.data.price.forEach(e => {
-            let value = { name: e.name, data: [e.value] }
-            this.series2.push(value)
-          })
+          let values = []
+          let itemData = { name: '销量金额', data: Array.from(r.data.price, ({value}) => value) }
+          values.push(itemData)
+          this.series2 = values
         }
         setTimeout(() => {
           this.loading = false

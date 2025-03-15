@@ -47,6 +47,21 @@ public class PayController {
     /**
      * 新增订单信息
      *
+     * @param orderInfo 订单信息
+     * @return 结果
+     */
+    @PostMapping("/saveOrderCheck")
+    public R saveOrderCheck(OrderInfo orderInfo) throws AlipayApiException {
+        orderInfo.setCode("ORD-" + System.currentTimeMillis());
+        orderInfo.setAfterOrderPrice(NumberUtil.round(orderInfo.getAfterOrderPrice(), 2));
+        orderInfo.setIntegral(orderInfo.getAfterOrderPrice());
+        orderInfoService.saveAuditOrder(orderInfo);
+        return R.ok(true);
+    }
+
+    /**
+     * 新增订单信息
+     *
      * @return 结果
      */
     @PostMapping("/alipay/custom")

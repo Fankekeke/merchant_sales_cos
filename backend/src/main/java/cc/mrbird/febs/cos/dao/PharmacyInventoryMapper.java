@@ -29,7 +29,7 @@ public interface PharmacyInventoryMapper extends BaseMapper<PharmacyInventory> {
      * @param pharmacyId 药房ID
      * @return 结果
      */
-    List<LinkedHashMap<String, Object>> selectInventoryByPharmacyTRS1R(@Param("pharmacyId") Integer pharmacyId);
+    List<LinkedHashMap<String, Object>> selectInventoryByPharmacyTRS1R(@Param("pharmacyId") Integer pharmacyId, @Param("dishesIdList") List<Integer> dishesIdList);
 
     /**
      * 根据药房ID获取库存信息

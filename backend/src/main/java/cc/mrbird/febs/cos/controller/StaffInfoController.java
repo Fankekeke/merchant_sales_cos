@@ -1,11 +1,13 @@
 package cc.mrbird.febs.cos.controller;
 
 
+import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.utils.R;
 import cc.mrbird.febs.cos.entity.MerchantInfo;
 import cc.mrbird.febs.cos.entity.StaffInfo;
 import cc.mrbird.febs.cos.service.IMerchantInfoService;
 import cc.mrbird.febs.cos.service.IStaffInfoService;
+import cc.mrbird.febs.system.service.UserService;
 import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -28,6 +30,8 @@ public class StaffInfoController {
     private final IStaffInfoService staffInfoService;
 
     private final IMerchantInfoService merchantInfoService;
+
+    private final UserService userService;
 
     /**
      * 分页获取员工信息
@@ -63,13 +67,39 @@ public class StaffInfoController {
     }
 
     /**
+     * 根据用户ID获取所属商家信息
+     *
+     * @param userId 用户ID
+     * @return 结果
+     */
+    @GetMapping("/selectMerchantByStaffId")
+    public R selectMerchantByStaffId(Integer userId) throws FebsException {
+        StaffInfo staffInfo = staffInfoService.getOne(Wrappers.<StaffInfo>lambdaQuery().eq(StaffInfo::getUserId, userId));
+        if (staffInfo == null) {
+            throw new FebsException("员工信息不存在");
+        }
+        return R.ok(merchantInfoService.getById(staffInfo.getCanteenId()));
+    }
+
+    /**
+     * 根据用户ID获取员工信息
+     *
+     * @param userId 用户ID
+     * @return 结果
+     */
+    @GetMapping("/queryStaffByUserId")
+    public R queryStaffByUserId(Integer userId) {
+        return R.ok(staffInfoService.getOne(Wrappers.<StaffInfo>lambdaQuery().eq(StaffInfo::getUserId, userId)));
+    }
+
+    /**
      * 新增员工信息
      *
      * @param staffInfo 员工信息
      * @return 结果
      */
     @PostMapping
-    public R save(StaffInfo staffInfo) {
+    public R save(StaffInfo staffInfo) throws Exception {
         // 获取所属药店
         MerchantInfo merchantInfo = merchantInfoService.getOne(Wrappers.<MerchantInfo>lambdaQuery().eq(MerchantInfo::getUserId, staffInfo.getCanteenId()));
         if (merchantInfo != null) {
@@ -77,7 +107,8 @@ public class StaffInfoController {
         }
         staffInfo.setCreateDate(DateUtil.formatDateTime(new Date()));
         staffInfo.setCode("STF-" + System.currentTimeMillis());
-        return R.ok(staffInfoService.save(staffInfo));
+        userService.registStaff(staffInfo.getCode(), "1234qwer", staffInfo);
+        return R.ok(true);
     }
 
     /**

@@ -226,16 +226,6 @@ export default {
           }
         }
       }, {
-        title: '销量',
-        dataIndex: 'saleNum',
-        customRender: (text, row, index) => {
-          if (text !== null) {
-            return text
-          } else {
-            return '- -'
-          }
-        }
-      }, {
         title: '操作',
         dataIndex: 'operation',
         scopedSlots: {customRender: 'operation'}

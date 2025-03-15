@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 
+import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -30,6 +31,22 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
      * @return 结果
      */
     List<OrderInfo> selectOrderByMonth(@Param("merchantId") Integer merchantId);
+
+    /**
+     * 本月订单支出
+     *
+     * @param merchantId 药店ID
+     * @return 结果
+     */
+    BigDecimal queryExpensesByMonthS12X(@Param("merchantId") Integer merchantId);
+
+    /**
+     * 本月订单支出
+     *
+     * @param merchantId 药店ID
+     * @return 结果
+     */
+    BigDecimal queryExpensesByMonthS13X(@Param("merchantId") Integer merchantId);
 
     /**
      * 本年订单信息
@@ -62,4 +79,13 @@ public interface OrderInfoMapper extends BaseMapper<OrderInfo> {
      * @return 结果
      */
     List<LinkedHashMap<String, Object>> selectOrderDishesType(@Param("merchantId") Integer merchantId);
+
+    /**
+     * 根据时间获取订单信息
+     *
+     * @param year  年度
+     * @param month 月度
+     * @return 结果
+     */
+    List<OrderInfo> selectOrderByCheckMonth(@Param("year") Integer year, @Param("month") Integer month);
 }

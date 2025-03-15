@@ -37,6 +37,9 @@
         <if test="warrantyInfo.drugName != null and warrantyInfo.drugName != ''">
             AND di.name LIKE CONCAT('%',#{warrantyInfo.drugName},'%')
         </if>
+        <if test="warrantyInfo.merchantId != null and warrantyInfo.merchantId != ''">
+            AND pi2.user_id = #{warrantyInfo.merchantId}
+        </if>
         GROUP BY pin.pharmacy_id, pin.purchase_code, pin.drug_id
     </select>
     <!-- 分页获取保质期预警信息 -->

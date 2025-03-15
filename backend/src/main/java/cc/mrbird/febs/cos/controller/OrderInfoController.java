@@ -5,8 +5,10 @@ import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.utils.R;
 import cc.mrbird.febs.cos.entity.CustomOrderInfo;
 import cc.mrbird.febs.cos.entity.OrderInfo;
+import cc.mrbird.febs.cos.entity.PharmacyInventory;
 import cc.mrbird.febs.cos.service.ICustomOrderInfoService;
 import cc.mrbird.febs.cos.service.IOrderInfoService;
+import cc.mrbird.febs.cos.service.IPharmacyInventoryService;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -29,6 +31,8 @@ public class OrderInfoController {
     private final IOrderInfoService orderInfoService;
 
     private final ICustomOrderInfoService customerInfoService;
+
+    private final IPharmacyInventoryService pharmacyInventoryService;
 
     /**
      * 分页获取订单信息
@@ -129,7 +133,6 @@ public class OrderInfoController {
         return R.ok(orderInfoService.audit(orderCode, status));
     }
 
-
     /**
      * 获取订单付款信息
      *
@@ -139,6 +142,48 @@ public class OrderInfoController {
     @PostMapping("/getPriceTotal")
     public R getPriceTotal(OrderInfo orderInfo) {
         return R.ok(orderInfoService.getPriceTotal(orderInfo));
+    }
+
+    /**
+     * 订单退货
+     *
+     * @param orderCode 订单编号
+     * @return 结果
+     */
+    @GetMapping("/orderReturn")
+    public R orderReturn(String orderCode) {
+        return R.ok(orderInfoService.update(Wrappers.<OrderInfo>lambdaUpdate().set(OrderInfo::getStatus, -2).eq(OrderInfo::getCode, orderCode)));
+    }
+
+    /**
+     * 订单退货审核
+     *
+     * @param orderCode 订单编号
+     * @return 结果
+     */
+    @GetMapping("/returnAudit")
+    public R returnAudit(String orderCode) throws FebsException {
+        // 获取订单信息
+        OrderInfo orderInfo = orderInfoService.getOne(Wrappers.<OrderInfo>lambdaQuery().eq(OrderInfo::getCode, orderCode));
+        if (orderInfo == null) {
+            throw new FebsException("未获取到订单信息");
+        }
+        if (StrUtil.isNotEmpty(orderInfo.getInventoryCodes())) {
+            List<String> codes = StrUtil.split(orderInfo.getInventoryCodes(), ",");
+            pharmacyInventoryService.update(Wrappers.<PharmacyInventory>lambdaUpdate().set(PharmacyInventory::getShelfStatus, 1).in(PharmacyInventory::getInventoryCode, codes));
+        }
+        return R.ok(orderInfoService.update(Wrappers.<OrderInfo>lambdaUpdate().set(OrderInfo::getStatus, -3).eq(OrderInfo::getCode, orderCode)));
+    }
+
+    /**
+     * 修改订单状态
+     *
+     * @param orderId 订单ID
+     * @return 结果
+     */
+    @GetMapping("/editStatus")
+    public R editStatus(Integer orderId) {
+        return R.ok(orderInfoService.update(Wrappers.<OrderInfo>lambdaUpdate().set(OrderInfo::getStatus, 0).eq(OrderInfo::getId, orderId)));
     }
 
     /**

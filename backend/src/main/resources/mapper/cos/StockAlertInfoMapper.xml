@@ -33,6 +33,9 @@
         <if test="stockAlertInfo.status != null">
             AND sai.status = #{stockAlertInfo.status}
         </if>
+        <if test="stockAlertInfo.merchantId != null">
+            AND phi.user_id = #{stockAlertInfo.merchantId}
+        </if>
         order by
         sai.create_date desc
     </select>

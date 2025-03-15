@@ -4,7 +4,7 @@
       <a-col :span="24">
         <div style="background: #ECECEC; padding: 30px;">
           <a-row :gutter="16">
-            <a-col :span="6">
+            <a-col :span="user.roleId == 75 ? 4 : 6">
               <a-card hoverable>
                 <a-row>
                   <a-col :span="24" style="font-size: 13px;margin-bottom: 8px;font-family: SimHei">本月订单量</a-col>
@@ -16,7 +16,7 @@
                 </a-row>
               </a-card>
             </a-col>
-            <a-col :span="6">
+            <a-col :span="user.roleId == 75 ? 4 : 6">
               <a-card hoverable>
                 <a-row>
                   <a-col :span="24" style="font-size: 13px;margin-bottom: 8px;font-family: SimHei">本月收益</a-col>
@@ -28,7 +28,31 @@
                 </a-row>
               </a-card>
             </a-col>
-            <a-col :span="6">
+            <a-col :span="user.roleId == 75 ? 4 : 6" v-if="user.roleId == 75">
+              <a-card hoverable>
+                <a-row>
+                  <a-col :span="24" style="font-size: 13px;margin-bottom: 8px;font-family: SimHei">本月支出</a-col>
+                  <a-col :span="4"><a-icon type="arrow-up" style="font-size: 30px;margin-top: 3px"/></a-col>
+                  <a-col :span="18" style="font-size: 28px;font-weight: 500;font-family: SimHei">
+                    {{ titleData.monthExpensesTotal }}
+                    <span style="font-size: 20px;margin-top: 3px">元</span>
+                  </a-col>
+                </a-row>
+              </a-card>
+            </a-col>
+            <a-col :span="user.roleId == 75 ? 4 : 6" v-if="user.roleId == 75">
+              <a-card hoverable>
+                <a-row>
+                  <a-col :span="24" style="font-size: 13px;margin-bottom: 8px;font-family: SimHei">本月利润</a-col>
+                  <a-col :span="4"><a-icon type="arrow-up" style="font-size: 30px;margin-top: 3px"/></a-col>
+                  <a-col :span="18" style="font-size: 28px;font-weight: 500;font-family: SimHei">
+                    {{ titleData.monthProfitTotal }}
+                    <span style="font-size: 20px;margin-top: 3px">元</span>
+                  </a-col>
+                </a-row>
+              </a-card>
+            </a-col>
+            <a-col :span="user.roleId == 75 ? 4 : 6">
               <a-card hoverable>
                 <a-row>
                   <a-col :span="24" style="font-size: 13px;margin-bottom: 8px;font-family: SimHei">本年订单量</a-col>
@@ -40,7 +64,7 @@
                 </a-row>
               </a-card>
             </a-col>
-            <a-col :span="6">
+            <a-col :span="user.roleId == 75 ? 4 : 6">
               <a-card hoverable>
                 <a-row>
                   <a-col :span="24" style="font-size: 13px;margin-bottom: 8px;font-family: SimHei">本年收益</a-col>
@@ -123,6 +147,8 @@ export default {
         monthOrderNum: 0,
         monthOrderTotal: 0,
         yearOrderNum: 0,
+        monthExpensesTotal: 0,
+        monthProfitTotal: 0,
         yearOrderTotal: 0
       },
       loading: false,
@@ -299,6 +325,8 @@ export default {
           this.titleData.monthOrderTotal = r.data.monthOrderTotal
           this.titleData.yearOrderNum = r.data.yearOrderNum
           this.titleData.yearOrderTotal = r.data.yearOrderTotal
+          this.titleData.monthProfitTotal = r.data.monthProfitTotal
+          this.titleData.monthExpensesTotal = r.data.monthExpensesTotal
           this.bulletinList = r.data.bulletinInfoList
           let values = []
           if (r.data.orderNumDayList !== null && r.data.orderNumDayList.length !== 0) {
@@ -311,6 +339,35 @@ export default {
           }
           this.series[0].data = Array.from(r.data.priceDayList, ({price}) => price)
           this.chartOptions.xaxis.categories = Array.from(r.data.priceDayList, ({days}) => days)
+        })
+      }
+      if (this.user.roleId === '77') {
+        this.$get('/cos/staff-info/selectMerchantByStaffId', {
+          userId: this.user.userId
+        }).then(res => {
+          let merchantId = res.data.data.userId
+          this.$get('/cos/merchant-info/homeData', {userId: merchantId}).then((r) => {
+            let titleData = { memberNum: r.data.memberNum, staffNum: r.data.staffNum, totalPrice: r.data.orderPrice, totalNum: r.data.orderNum }
+            this.$emit('setTitle', titleData)
+            this.titleData.monthOrderNum = r.data.monthOrderNum
+            this.titleData.monthOrderTotal = r.data.monthOrderTotal
+            this.titleData.yearOrderNum = r.data.yearOrderNum
+            this.titleData.yearOrderTotal = r.data.yearOrderTotal
+            this.titleData.monthProfitTotal = r.data.monthProfitTotal
+            this.titleData.monthExpensesTotal = r.data.monthExpensesTotal
+            this.bulletinList = r.data.bulletinInfoList
+            let values = []
+            if (r.data.orderNumDayList !== null && r.data.orderNumDayList.length !== 0) {
+              if (this.chartOptions1.xaxis.categories.length === 0) {
+                this.chartOptions1.xaxis.categories = Array.from(r.data.orderNumDayList, ({days}) => days)
+              }
+              let itemData = { name: '订单数', data: Array.from(r.data.orderNumDayList, ({count}) => count) }
+              values.push(itemData)
+              this.series1 = values
+            }
+            this.series[0].data = Array.from(r.data.priceDayList, ({price}) => price)
+            this.chartOptions.xaxis.categories = Array.from(r.data.priceDayList, ({days}) => days)
+          })
         })
       }
     }

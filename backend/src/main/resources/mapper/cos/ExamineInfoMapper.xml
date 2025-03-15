@@ -40,6 +40,9 @@
         <if test="examineInfo.drugName != null and examineInfo.drugName != ''">
             AND di.name LIKE CONCAT('%',#{examineInfo.drugName},'%')
         </if>
+        <if test="examineInfo.merchantId != null">
+            AND mi.user_id = #{examineInfo.merchantId}
+        </if>
         order by
         wi.create_date desc
     </select>

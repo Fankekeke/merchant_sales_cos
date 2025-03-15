@@ -57,6 +57,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     private final IMailService mailService;
 
+    private final IPharmacyInventoryService pharmacyInventoryService;
+
 
     /**
      * 分页获取订单信息
@@ -146,6 +148,35 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
         // 添加订单
         orderInfo.setStatus("0");
+        orderInfo.setMedicationFlag("0");
+        this.save(orderInfo);
+
+        List<OrderItemInfo> orderItemList = JSONUtil.toList(orderInfo.getOrderItemListStr(), OrderItemInfo.class);
+
+        // 添加订单详情
+        for (OrderItemInfo orderItem : orderItemList) {
+            orderItem.setOrderId(orderInfo.getId());
+        }
+        return orderItemInfoService.saveBatch(orderItemList);
+    }
+
+    /**
+     * 新增订单信息
+     *
+     * @param orderInfo 订单信息
+     * @return 结果
+     */
+    @Override
+    public boolean saveAuditOrder(OrderInfo orderInfo) {
+        orderInfo.setCreateDate(DateUtil.formatDateTime(new Date()));
+        // 用户信息
+        UserInfo userInfo = userInfoService.getOne(Wrappers.<UserInfo>lambdaQuery().eq(UserInfo::getUserId, orderInfo.getUserId()));
+
+        orderInfo.setUserId(userInfo.getId());
+        orderInfo.setMedicationFlag("1");
+
+        // 添加订单
+        orderInfo.setStatus("-1");
         this.save(orderInfo);
 
         List<OrderItemInfo> orderItemList = JSONUtil.toList(orderInfo.getOrderItemListStr(), OrderItemInfo.class);
@@ -310,6 +341,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 DishesInfo dishesInfo = dishesMap.get(orderItemInfo.getDishesId());
                 orderItemInfo.setDishesName(dishesInfo.getName());
                 orderItemInfo.setImages(dishesInfo.getImages());
+                orderItemInfo.setRawMaterial(dishesInfo.getRawMaterial());
+                orderItemInfo.setPortion(dishesInfo.getPortion());
             }
         }
         result.put("orderItem", orderItemInfoList);
@@ -541,6 +574,9 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
             String emailContent = templateEngine.process("registerEmail", context);
             mailService.sendHtmlMail(userInfo.getMail(), DateUtil.formatDate(new Date()) + "支付通知", emailContent);
         }
+
+        // 更新药店库存
+        pharmacyInventoryService.setPharmacyInventory(orderInfo);
 
         // 更新用户积分
         userInfoService.updateById(userInfo);

@@ -57,4 +57,7 @@ public class StockAlertInfo implements Serializable {
      */
     @TableField(exist = false)
     private String shopName;
+
+    @TableField(exist = false)
+    private Integer merchantId;
 }

@@ -1,5 +1,6 @@
 package cc.mrbird.febs.cos.service;
 
+import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.cos.entity.MerchantInfo;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -46,4 +47,12 @@ public interface IMerchantInfoService extends IService<MerchantInfo> {
      * @return 结果
      */
     LinkedHashMap<String, Object> selectHomeDataByAdmin();
+
+    /**
+     * 根据月份获取药品统计情况
+     *
+     * @param date 日期
+     * @return 结果
+     */
+    LinkedHashMap<String, Object> selectStatisticsByMonth(String date) throws FebsException;
 }

@@ -27,6 +27,9 @@
           {{ orderInfo.integral }}
         </a-col>
         <a-col :span="6"><b>订单状态：</b>
+          <span v-if="orderInfo.status === '-3'" style="color: pink">已退货</span>
+          <span v-if="orderInfo.status === '-2'" style="color: red">退货中</span>
+          <span v-if="orderInfo.status === '-1'" style="color: red">等待审核</span>
           <span v-if="orderInfo.status === '0'" style="color: red">未支付</span>
           <span v-if="orderInfo.status === '1'" style="color: blue">已支付</span>
           <span v-if="orderInfo.status === '2'" style="color: orange">配送中</span>
@@ -53,6 +56,28 @@
         </a-col>
         <a-col :span="6"><b>送达时间：</b>
           {{ orderInfo.serviceDate }}
+        </a-col>
+      </a-row>
+      <br/>
+      <a-row style="padding-left: 24px;padding-right: 24px;" v-if="orderInfo.medicationFlag != null && orderInfo.medicationFlag == 1">
+        <a-col :span="24"><b>处方内容：</b>
+          {{ orderInfo.content }}
+        </a-col>
+        <br/>
+        <br/>
+        <a-col :span="24">
+          <a-upload
+            name="avatar"
+            action="http://127.0.0.1:9527/file/fileUpload/"
+            list-type="picture-card"
+            :file-list="fileList"
+            @preview="handlePreview"
+            @change="picHandleChange"
+          >
+          </a-upload>
+          <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel">
+            <img alt="example" style="width: 100%" :src="previewImage" />
+          </a-modal>
         </a-col>
       </a-row>
       <br/>
@@ -259,6 +284,7 @@ export default {
     orderShow: function (value) {
       if (value) {
         this.dataInit(this.orderData.id)
+        this.imagesInit(this.orderData.images)
       }
     }
   },
@@ -272,7 +298,7 @@ export default {
         this.addressInfo = r.data.address
         this.staffInfo = r.data.staff
         this.evaluateInfo = r.data.evaluate
-        this.imagesInit(this.merchantInfo.images)
+        // this.imagesInit(this.merchantInfo.images)
       })
     },
     imagesInit (images) {

@@ -58,6 +58,10 @@ public class OrderItemInfo implements Serializable {
      */
     @TableField(exist = false)
     private String dishesName;
+    @TableField(exist = false)
+    private String rawMaterial;
+    @TableField(exist = false)
+    private String portion;
 
     /**
      * 药品图片

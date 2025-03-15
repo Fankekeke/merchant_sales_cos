@@ -239,6 +239,12 @@ export default {
         dataIndex: 'status',
         customRender: (text, row, index) => {
           switch (text) {
+            case '-3':
+              return <a-tag>已退货</a-tag>
+            case '-2':
+              return <a-tag>退货中</a-tag>
+            case '-1':
+              return <a-tag color="pink">等待审核</a-tag>
             case '0':
               return <a-tag color="red">未支付</a-tag>
             case '1':

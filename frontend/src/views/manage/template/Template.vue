@@ -7,18 +7,18 @@
           <div :class="advanced ? null: 'fold'">
             <a-col :md="6" :sm="24">
               <a-form-item
-                label="标题"
+                label="模板编号"
                 :labelCol="{span: 5}"
                 :wrapperCol="{span: 18, offset: 1}">
-                <a-input v-model="queryParams.title"/>
+                <a-input v-model="queryParams.code"/>
               </a-form-item>
             </a-col>
             <a-col :md="6" :sm="24">
               <a-form-item
-                label="内容"
+                label="模板名称"
                 :labelCol="{span: 5}"
                 :wrapperCol="{span: 18, offset: 1}">
-                <a-input v-model="queryParams.content"/>
+                <a-input v-model="queryParams.name"/>
               </a-form-item>
             </a-col>
           </div>
@@ -130,13 +130,12 @@ export default {
     }),
     columns () {
       return [{
-        title: '标题',
-        dataIndex: 'title',
+        title: '模板编号',
+        dataIndex: 'code',
         ellipsis: true
       }, {
-        title: '公告内容',
-        dataIndex: 'content',
-        scopedSlots: { customRender: 'contentShow' },
+        title: '模板名称',
+        dataIndex: 'name',
         ellipsis: true
       }, {
         title: '发布时间',
@@ -150,21 +149,21 @@ export default {
         },
         ellipsis: true
       }, {
-        title: '上下架',
-        dataIndex: 'type',
+        title: '是否默认',
+        dataIndex: 'defaultFlag',
         customRender: (text, row, index) => {
           switch (text) {
-            case 1:
-              return <a-tag>上架</a-tag>
-            case 2:
-              return <a-tag>下架</a-tag>
+            case '0':
+              return <a-tag color="red">否</a-tag>
+            case '1':
+              return <a-tag color="green">是</a-tag>
             default:
               return '- -'
           }
         }
       }, {
-        title: '上传人',
-        dataIndex: 'publisher',
+        title: '备注',
+        dataIndex: 'content',
         customRender: (text, row, index) => {
           if (text !== null) {
             return text
@@ -198,7 +197,7 @@ export default {
     },
     handleBulletinAddSuccess () {
       this.bulletinAdd.visiable = false
-      this.$message.success('新增公告成功')
+      this.$message.success('新增小票模板成功')
       this.search()
     },
     edit (record) {
@@ -210,7 +209,7 @@ export default {
     },
     handleBulletinEditSuccess () {
       this.bulletinEdit.visiable = false
-      this.$message.success('修改公告成功')
+      this.$message.success('修改小票模板成功')
       this.search()
     },
     handleDeptChange (value) {
@@ -228,7 +227,7 @@ export default {
         centered: true,
         onOk () {
           let ids = that.selectedRowKeys.join(',')
-          that.$delete('/cos/bulletin-info/' + ids).then(() => {
+          that.$delete('/cos/order-template-info/' + ids).then(() => {
             that.$message.success('删除成功')
             that.selectedRowKeys = []
             that.search()
@@ -298,7 +297,7 @@ export default {
         params.size = this.pagination.defaultPageSize
         params.current = this.pagination.defaultCurrent
       }
-      this.$get('/cos/bulletin-info/page', {
+      this.$get('/cos/order-template-info/page', {
         ...params
       }).then((r) => {
         let data = r.data.data

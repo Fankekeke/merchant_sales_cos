@@ -36,6 +36,9 @@
         <if test="purchaseInfo.status != null">
             AND pui.status = #{purchaseInfo.status}
         </if>
+        <if test="purchaseInfo.merchantId != null">
+            AND pi2.user_id = #{purchaseInfo.merchantId}
+        </if>
         order by
         pui.create_date desc
     </select>

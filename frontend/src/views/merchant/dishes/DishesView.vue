@@ -23,18 +23,15 @@
         <a-col :span="8"><b>型号规格：</b>
           {{ dishesData.portion }}
         </a-col>
-        <a-col :span="8"><b>药品余量：</b>
-          {{ dishesData.laveNum }}
+        <a-col :span="8"><b>进货价格：</b>
+          {{ dishesData.receiveUnitPrice }} 元
         </a-col>
-        <a-col :span="8"><b>价格：</b>
+        <a-col :span="8"><b>销售价格：</b>
           {{ dishesData.unitPrice }} 元
         </a-col>
       </a-row>
       <br/>
       <a-row style="padding-left: 24px;padding-right: 24px;">
-        <a-col :span="8"><b>销量：</b>
-          {{ dishesData.saleNum }}
-        </a-col>
         <a-col :span="8"><b>上架状态：</b>
           <span v-if="dishesData.status == 0" style="color: red">下架</span>
           <span v-if="dishesData.status == 1" style="color: green">上架</span>
@@ -59,6 +56,10 @@
       <a-row style="padding-left: 24px;padding-right: 24px;">
         <a-col :span="8"><b>药品类型：</b>
           {{ dishesData.typeName }}
+        </a-col>
+        <a-col :span="8"><b>是否为处方药：</b>
+          <span v-if="dishesData.prescriptionFlag == 1" style="color: red">是</span>
+          <span v-if="dishesData.prescriptionFlag == 0" style="color: green">否</span>
         </a-col>
       </a-row>
       <br/>

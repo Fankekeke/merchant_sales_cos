@@ -19,6 +19,14 @@
           </a-form-item>
         </a-col>
         <a-col :span="12">
+          <a-form-item label='联系方式' v-bind="formItemLayout">
+            <a-input v-decorator="[
+            'phone',
+            { rules: [{ required: true, message: '请输入联系方式!' }] }
+            ]"/>
+          </a-form-item>
+        </a-col>
+        <a-col :span="12">
           <a-form-item label='员工性别' v-bind="formItemLayout">
             <a-select v-decorator="[
               'sex',

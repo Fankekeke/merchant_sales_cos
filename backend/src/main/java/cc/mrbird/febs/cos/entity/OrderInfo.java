@@ -101,6 +101,7 @@ public class OrderInfo implements Serializable {
      * 送达时间
      */
     private String serviceDate;
+    private String inventoryCodes;
 
     /**
      * 送货地址
@@ -111,6 +112,9 @@ public class OrderInfo implements Serializable {
      * 员工ID
      */
     private Integer staffId;
+    private String images;
+    private String content;
+    private String medicationFlag;
 
     /**
      * 订单药品

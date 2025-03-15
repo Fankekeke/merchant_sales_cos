@@ -51,14 +51,6 @@
           </a-form-item>
         </a-col>
         <a-col :span="12">
-          <a-form-item label='积分价格' v-bind="formItemLayout">
-            <a-input-number style="width: 100%" v-decorator="[
-            'integralUnit',
-            { rules: [{ required: true, message: '请输入积分价格!' }] }
-            ]" :min="0.1" :step="0.1"/>
-          </a-form-item>
-        </a-col>
-        <a-col :span="12">
           <a-form-item label='药品状态' v-bind="formItemLayout">
             <a-select v-decorator="[
               'status',

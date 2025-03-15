@@ -1,6 +1,7 @@
 package cc.mrbird.febs.cos.controller;
 
 
+import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.utils.R;
 import cc.mrbird.febs.cos.entity.MerchantInfo;
 import cc.mrbird.febs.cos.entity.UserInfo;
@@ -201,6 +202,17 @@ public class MerchantInfoController {
             merchantInfo.setOperateDay(StrUtil.join(",", operateDayResult));
         }
         return R.ok(merchantInfoService.updateById(merchantInfo));
+    }
+
+    /**
+     * 根据月份获取药品统计情况
+     *
+     * @param date 日期
+     * @return 结果
+     */
+    @GetMapping("/selectStatisticsByMonth")
+    public R selectStatisticsByMonth(@RequestParam("date") String date) throws FebsException {
+        return R.ok(merchantInfoService.selectStatisticsByMonth(date));
     }
 
     /**

@@ -4,15 +4,17 @@ import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.cos.dao.DishesInfoMapper;
 import cc.mrbird.febs.cos.dao.PharmacyInventoryMapper;
 import cc.mrbird.febs.cos.dao.PurchaseInfoMapper;
-import cc.mrbird.febs.cos.entity.DishesInfo;
-import cc.mrbird.febs.cos.entity.InventoryStatistics;
-import cc.mrbird.febs.cos.entity.PharmacyInventory;
-import cc.mrbird.febs.cos.entity.PurchaseInfo;
+import cc.mrbird.febs.cos.entity.*;
 import cc.mrbird.febs.cos.service.IInventoryStatisticsService;
+import cc.mrbird.febs.cos.service.IOrderInfoService;
+import cc.mrbird.febs.cos.service.IOrderItemInfoService;
 import cc.mrbird.febs.cos.service.IPharmacyInventoryService;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
+import com.alipay.api.domain.OrderDetail;
+import com.alipay.api.domain.OrderItem;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -37,6 +39,8 @@ public class PharmacyInventoryServiceImpl extends ServiceImpl<PharmacyInventoryM
     private final PurchaseInfoMapper purchaseInfoMapper;
     private final DishesInfoMapper dishesInfoMapper;
 
+    private final IOrderItemInfoService orderDetailService;
+
     /**
      * 分页获取药店库存信息
      *
@@ -50,6 +54,54 @@ public class PharmacyInventoryServiceImpl extends ServiceImpl<PharmacyInventoryM
     }
 
     /**
+     * 订单出货后设置库存
+     *
+     * @param orderInfo 订单编号
+     * @return 结果
+     */
+    @Override
+    public boolean setPharmacyInventory(OrderInfo orderInfo) {
+        // 获取订单详情信息
+        List<OrderItemInfo> orderDetailList = orderDetailService.list(Wrappers.<OrderItemInfo>lambdaQuery().eq(OrderItemInfo::getOrderId, orderInfo.getId()));
+        if (CollectionUtil.isEmpty(orderDetailList)) {
+            return false;
+        }
+
+        // orderDetailList根据DishesId分组
+        Map<Integer, List<OrderItemInfo>> orderDetailMap = orderDetailList.stream().collect(Collectors.groupingBy(OrderItemInfo::getDishesId));
+
+        // 获取药店库存
+        List<PharmacyInventory> inventoryList = baseMapper.selectList(Wrappers.<PharmacyInventory>lambdaQuery()
+                .eq(PharmacyInventory::getPharmacyId, orderInfo.getMerchantId())
+                .eq(PharmacyInventory::getShelfStatus, 1)
+                .in(PharmacyInventory::getDrugId, orderDetailMap.keySet()));
+        // 带更新的库存信息
+        List<PharmacyInventory> updateInventoryList = new ArrayList<>();
+        // inventoryList按药品ID分组
+        Map<Integer, List<PharmacyInventory>> inventoryMap = inventoryList.stream().collect(Collectors.groupingBy(PharmacyInventory::getDrugId));
+
+        orderDetailMap.forEach((k, v) -> {
+            OrderItemInfo orderDetail = v.get(0);
+            List<PharmacyInventory> currentPharmacyInventoryList = inventoryMap.get(k);
+            if (CollectionUtil.isNotEmpty(currentPharmacyInventoryList)) {
+                currentPharmacyInventoryList = currentPharmacyInventoryList.stream().sorted(Comparator.comparing(PharmacyInventory::getEndDate).reversed()).collect(Collectors.toList());
+                for (Integer i = 0; i < orderDetail.getAmount(); i++) {
+                    PharmacyInventory currentPharmacyInventory = currentPharmacyInventoryList.get(i);
+                    currentPharmacyInventory.setShelfStatus(3);
+                    updateInventoryList.add(currentPharmacyInventory);
+                }
+            }
+        });
+        if (CollectionUtil.isNotEmpty(updateInventoryList)) {
+            this.updateBatchById(updateInventoryList);
+
+            List<String> stockCodes = updateInventoryList.stream().map(PharmacyInventory::getInventoryCode).collect(Collectors.toList());
+            orderInfo.setInventoryCodes(StrUtil.join(",", stockCodes));
+        }
+        return true;
+    }
+
+    /**
      * 根据药房ID获取库存信息
      *
      * @param pharmacyId 药房ID
@@ -57,7 +109,14 @@ public class PharmacyInventoryServiceImpl extends ServiceImpl<PharmacyInventoryM
      */
     @Override
     public List<LinkedHashMap<String, Object>> selectInventoryByPharmacyTRS1R(Integer pharmacyId) {
-        return baseMapper.selectInventoryByPharmacyTRS1R(pharmacyId);
+        // 根据商家获取上架的药品
+        List<DishesInfo> dishesInfoList = dishesInfoMapper.selectList(Wrappers.<DishesInfo>lambdaQuery().eq(DishesInfo::getMerchantId, pharmacyId).eq(DishesInfo::getStatus, 1));
+        if (CollectionUtil.isEmpty(dishesInfoList)) {
+            return Collections.emptyList();
+        }
+
+        List<Integer> dishesIdList = dishesInfoList.stream().map(DishesInfo::getId).collect(Collectors.toList());
+        return baseMapper.selectInventoryByPharmacyTRS1R(pharmacyId, dishesIdList);
     }
 
     /**

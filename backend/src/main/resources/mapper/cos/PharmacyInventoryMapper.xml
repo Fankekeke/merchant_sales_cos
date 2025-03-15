@@ -38,6 +38,9 @@
         <if test="pharmacyInventory.rawMaterial != null and pharmacyInventory.rawMaterial != ''">
             AND di.raw_material LIKE CONCAT('%',#{pharmacyInventory.rawMaterial},'%')
         </if>
+        <if test="pharmacyInventory.merchantId != null">
+            AND pi2.user_id = #{pharmacyInventory.merchantId}
+        </if>
         GROUP BY pin.pharmacy_id, pin.drug_id
     </select>
 
@@ -81,6 +84,10 @@
         AND pin.shelf_status = 1
         AND pin.pharmacy_id = #{pharmacyId}
         AND di.status = 1
+        AND pin.drug_id IN
+        <foreach collection="dishesIdList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
         GROUP BY pin.pharmacy_id, pin.drug_id
         HAVING count(pin.reserve) > 0
     </select>

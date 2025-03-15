@@ -64,7 +64,8 @@
         </template>
         <template slot="operation" slot-scope="text, record">
           <a-icon type="file-search" @click="orderViewOpen(record)" title="详 情"></a-icon>
-          <a-icon v-if="record.status == 1 && record.type == 0" type="check" @click="orderComplete(record)" title="订单完成" style="margin-left: 15px"></a-icon>
+          <a-icon v-if="record.status == -2" type="warning" @click="returnAudit(record)" title="退 货" style="margin-left: 15px"></a-icon>
+<!--          <a-icon v-if="record.status == 1 && record.type == 0" type="check" @click="orderComplete(record)" title="订单完成" style="margin-left: 15px"></a-icon>-->
           <a-icon v-if="record.addressId != null && (record.status == 1 || record.status == 2)" type="setting" theme="twoTone" twoToneColor="#4a9ff5" @click="orderAuditOpen(record)" title="修 改" style="margin-left: 15px"></a-icon>
           <a-icon v-if="record.type == 1" type="cluster" @click="orderMapOpen(record)" title="地 图" style="margin-left: 15px"></a-icon>
         </template>
@@ -84,6 +85,7 @@
     </order-status>
     <order-view
       @close="handleorderViewClose"
+      @success="handleorderViewSuccess"
       :orderShow="orderView.visiable"
       :orderData="orderView.data">
     </order-view>
@@ -237,6 +239,12 @@ export default {
         dataIndex: 'status',
         customRender: (text, row, index) => {
           switch (text) {
+            case '-3':
+              return <a-tag>已退货</a-tag>
+            case '-2':
+              return <a-tag>退货中</a-tag>
+            case '-1':
+              return <a-tag color="pink">等待审核</a-tag>
             case '0':
               return <a-tag color="red">未支付</a-tag>
             case '1':
@@ -304,6 +312,22 @@ export default {
       this.orderStatusView.data = row
       this.orderStatusView.visiable = true
     },
+    returnAudit (record) {
+      let that = this
+      this.$confirm({
+        title: '确定审核退货当前订单?',
+        content: '当您点击确定按钮后，此订单药品会回退到库存中',
+        centered: true,
+        onOk () {
+          that.$get('/cos/order-info/returnAudit', {orderCode: record.code}).then((r) => {
+            that.$message.success('退货审核成功')
+            that.fetch()
+          })
+        },
+        onCancel () {
+        }
+      })
+    },
     orderAuditOpen (row) {
       this.orderAuditView.data = row
       this.orderAuditView.visiable = true
@@ -314,6 +338,11 @@ export default {
     },
     handleorderViewClose () {
       this.orderView.visiable = false
+    },
+    handleorderViewSuccess () {
+      this.orderView.visiable = false
+      this.$message.success('审核成功')
+      this.fetch()
     },
     handleorderStatusViewClose () {
       this.orderStatusView.visiable = false

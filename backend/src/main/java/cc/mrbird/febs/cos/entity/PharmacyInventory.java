@@ -90,5 +90,7 @@ public class PharmacyInventory implements Serializable {
 
     @TableField(exist = false)
     private String images;
+    @TableField(exist = false)
+    private Integer merchantId;
 
 }

@@ -137,6 +137,17 @@ export default {
         dataIndex: 'code',
         ellipsis: true
       }, {
+        title: '联系方式',
+        dataIndex: 'phone',
+        customRender: (text, row, index) => {
+          if (text !== null) {
+            return text
+          } else {
+            return '- -'
+          }
+        },
+        ellipsis: true
+      }, {
         title: '性别',
         dataIndex: 'sex',
         customRender: (text, row, index) => {

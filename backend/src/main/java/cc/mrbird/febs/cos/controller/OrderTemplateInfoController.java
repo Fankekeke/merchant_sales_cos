@@ -5,6 +5,7 @@ import cc.mrbird.febs.common.utils.R;
 import cc.mrbird.febs.cos.entity.OrderTemplateInfo;
 import cc.mrbird.febs.cos.service.IOrderTemplateInfoService;
 import cn.hutool.core.date.DateUtil;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class OrderTemplateInfoController {
     /**
      * 分页获取小票模板信息
      *
-     * @param page         分页对象
+     * @param page              分页对象
      * @param orderTemplateInfo 小票模板信息
      * @return 结果
      */
@@ -57,6 +58,16 @@ public class OrderTemplateInfoController {
     }
 
     /**
+     * 获取默认模板
+     *
+     * @return 结果
+     */
+    @GetMapping("/queryDefaultTemplate")
+    public R queryDefaultTemplate() {
+        return R.ok(orderTemplateInfoService.getOne(Wrappers.<OrderTemplateInfo>lambdaQuery().eq(OrderTemplateInfo::getDefaultFlag, 1)));
+    }
+
+    /**
      * 新增小票模板信息
      *
      * @param orderTemplateInfo 小票模板信息
@@ -64,8 +75,10 @@ public class OrderTemplateInfoController {
      */
     @PostMapping
     public R save(OrderTemplateInfo orderTemplateInfo) {
-        orderTemplateInfo.setCode("TP-" + System.currentTimeMillis());
         orderTemplateInfo.setCreateDate(DateUtil.formatDateTime(new Date()));
+        if ("1".equals(orderTemplateInfo.getDefaultFlag())) {
+            orderTemplateInfoService.update(Wrappers.<OrderTemplateInfo>lambdaUpdate().set(OrderTemplateInfo::getDefaultFlag, 0).eq(OrderTemplateInfo::getDefaultFlag, 1));
+        }
         return R.ok(orderTemplateInfoService.save(orderTemplateInfo));
     }
 
@@ -77,6 +90,9 @@ public class OrderTemplateInfoController {
      */
     @PutMapping
     public R edit(OrderTemplateInfo orderTemplateInfo) {
+        if ("1".equals(orderTemplateInfo.getDefaultFlag())) {
+            orderTemplateInfoService.update(Wrappers.<OrderTemplateInfo>lambdaUpdate().set(OrderTemplateInfo::getDefaultFlag, 0).eq(OrderTemplateInfo::getDefaultFlag, 1));
+        }
         return R.ok(orderTemplateInfoService.updateById(orderTemplateInfo));
     }
 

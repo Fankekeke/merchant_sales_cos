@@ -44,4 +44,6 @@ public class AttendanceInfo implements Serializable {
 
     @TableField(exist = false)
     private Integer enterpriseId;
+    @TableField(exist = false)
+    private Integer merchantId;
 }

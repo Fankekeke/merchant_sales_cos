@@ -27,6 +27,9 @@
         <if test="attendanceInfo.staffId != null and attendanceInfo.staffId != ''">
             AND si.user_id = #{attendanceInfo.staffId}
         </if>
+        <if test="attendanceInfo.merchantId != null and attendanceInfo.merchantId != ''">
+            AND mi.user_id = #{attendanceInfo.merchantId}
+        </if>
         order by ai.put_take_date desc
     </select>
 

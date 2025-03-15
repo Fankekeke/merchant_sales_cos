@@ -63,6 +63,7 @@ public class StaffInfo implements Serializable {
      * 创建时间
      */
     private String createDate;
+    private String phone;
 
     /**
      * 基础工资

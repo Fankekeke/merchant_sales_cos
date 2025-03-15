@@ -38,6 +38,12 @@
         <if test="salaryRecords.month != null and salaryRecords.month != ''">
             and sr.month = #{salaryRecords.month}
         </if>
+        <if test="salaryRecords.merchantId != null and salaryRecords.merchantId != ''">
+            AND mi.user_id = #{salaryRecords.merchantId}
+        </if>
+        <if test="salaryRecords.staffId != null and salaryRecords.staffId != ''">
+            AND si.user_id = #{salaryRecords.staffId}
+        </if>
         ORDER BY sr.year DESC, sr.month DESC, sr.payroll DESC
     </select>
 

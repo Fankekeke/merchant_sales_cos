@@ -143,6 +143,35 @@
                         </a-select>
                       </a-col>
                     </a-row>
+                    <a-row style="padding-left: 20px;padding-right: 20px;margin-top: 30px"  v-if="prescriptionFlag">
+                      <a-col :span="24">
+                        <a-form-item label='处方内容'>
+                          <a-textarea :rows="6" v-model="content"/>
+                        </a-form-item>
+                      </a-col>
+                      <a-col :span="24">
+                        <a-form-item label='图册'>
+                          <a-upload
+                            name="avatar"
+                            action="http://127.0.0.1:9527/file/fileUpload/"
+                            list-type="picture-card"
+                            :file-list="fileList"
+                            @preview="handlePreview"
+                            @change="picHandleChange"
+                          >
+                            <div v-if="fileList.length < 8">
+                              <a-icon type="plus" />
+                              <div class="ant-upload-text">
+                                Upload
+                              </div>
+                            </div>
+                          </a-upload>
+                          <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel">
+                            <img alt="example" style="width: 100%" :src="previewImage" />
+                          </a-modal>
+                        </a-form-item>
+                      </a-col>
+                    </a-row>
                     <div style="padding-left: 20px;margin-top: 25px;text-align: right;padding-right: 30px"><span>药品合计</span>
                       <span style="color: red">{{ totalPrice }} 元</span>
                     </div>
@@ -195,7 +224,8 @@
           <a-button style="margin-right: .8rem">取消</a-button>
         </a-popconfirm>
         <a-button @click="next" type="primary" v-if="nextFlag == 1">下一步</a-button>
-        <a-button @click="orderPay" type="primary" v-if="nextFlag == 2">支付</a-button>
+        <a-button @click="orderPay" type="primary" v-if="nextFlag == 2 && !prescriptionFlag">支付</a-button>
+        <a-button @click="orderCheck" type="primary" v-if="nextFlag == 2 && prescriptionFlag">提交订单</a-button>
       </div>
     </div>
     <dishes-view
@@ -210,6 +240,14 @@
 import baiduMap from '@/utils/map/baiduMap'
 import {mapState} from 'vuex'
 import dishesView from '..//DishesView.vue'
+function getBase64 (file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = error => reject(error)
+  })
+}
 export default {
   name: 'Map',
   components: {dishesView},
@@ -245,6 +283,19 @@ export default {
       }, {
         title: '购买数量',
         dataIndex: 'amount'
+      }, {
+        title: '处方药',
+        dataIndex: 'prescriptionFlag',
+        customRender: (text, row, index) => {
+          switch (text) {
+            case '0':
+              return <a-tag color="#87d068">否</a-tag>
+            case '1':
+              return <a-tag color="#2db7f5">是</a-tag>
+            default:
+              return '- -'
+          }
+        }
       }, {
         title: '单价',
         dataIndex: 'unitPrice',
@@ -316,8 +367,10 @@ export default {
       orderAddInfo: null,
       addressId: null,
       typeId: null,
+      prescriptionFlag: false,
       addressList: [],
       type: '0',
+      content: '',
       nextFlag: 1,
       totalPrice: 0,
       totalIntegral: 0,
@@ -345,6 +398,9 @@ export default {
       roadData: [],
       collectList: [],
       typeList: [],
+      fileList: [],
+      previewVisible: false,
+      previewImage: '',
       checkLoading: false,
       echartsShow: false,
       getShop: null,
@@ -375,11 +431,14 @@ export default {
         this.addressId = null
         this.addressList = []
         this.typeList = []
+        this.fileList = []
+        this.content = ''
         this.type = '0'
         this.nextFlag = 1
         this.totalPrice = 0
         this.totalIntegral = 0
         this.totalHeat = 0
+        this.prescriptionFlag = false
         this.selectDishesByMerchant(this.orderData.id)
         this.selectTypeList()
         this.selectMerchantEvaluate(this.orderData.id)
@@ -397,6 +456,19 @@ export default {
     }
   },
   methods: {
+    handleCancel () {
+      this.previewVisible = false
+    },
+    async handlePreview (file) {
+      if (!file.url && !file.preview) {
+        file.preview = await getBase64(file.originFileObj)
+      }
+      this.previewImage = file.url || file.preview
+      this.previewVisible = true
+    },
+    picHandleChange ({ fileList }) {
+      this.fileList = fileList
+    },
     onChange (e) {
       if (e.target.value == -1) {
         this.dishesList = this.dishesBackList
@@ -461,6 +533,26 @@ export default {
         document.forms[0].submit()
       })
     },
+    orderCheck () {
+      this.orderAddInfo.userId = this.currentUser.userId
+      if (this.fileList.length === 0 || this.content === '') {
+        this.$message.error('请填写处方内容并上传图片')
+        return false
+      }
+      this.orderAddInfo.content = this.content
+      // 获取图片List
+      let images = []
+      this.fileList.forEach(image => {
+        images.push(image.response)
+      })
+      this.orderAddInfo.images = images.length > 0 ? images.join(',') : null
+      this.$post('/cos/pay/saveOrderCheck', this.orderAddInfo).then((r) => {
+        this.$message.success('提交成功，等待店家审核')
+        setTimeout(() => {
+          this.$router.push('/user/order')
+        }, 1000)
+      })
+    },
     getPriceTotal () {
       this.$post(`/cos/order-info/getPriceTotal`, {
         userId: this.currentUser.userId,
@@ -491,6 +583,11 @@ export default {
         return false
       }
       this.nextFlag = 2
+      // 判断checkList是否含有处方药品
+      if (this.checkList.some(e => e.prescriptionFlag == 1)) {
+        console.log(this.checkList)
+        this.prescriptionFlag = true
+      }
       this.getPriceTotal()
     },
     dishesRemove (row) {
