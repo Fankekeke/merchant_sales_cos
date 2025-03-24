@@ -183,6 +183,10 @@ export default {
           </a-popover>
         }
       }, {
+        title: '采购单号',
+        ellipsis: true,
+        dataIndex: 'purchaseCode'
+      }, {
         title: '数量',
         dataIndex: 'reserve',
         customRender: (text, row, index) => {
@@ -196,6 +200,16 @@ export default {
         title: '所属分类',
         dataIndex: 'typeName',
         ellipsis: true,
+        customRender: (text, row, index) => {
+          if (text !== null) {
+            return text
+          } else {
+            return '- -'
+          }
+        }
+      }, {
+        title: '保质期截至',
+        dataIndex: 'endDate',
         customRender: (text, row, index) => {
           if (text !== null) {
             return text
